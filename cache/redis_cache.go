@@ -17,7 +17,7 @@ type Cache interface {
 	Set(key string, value task.Task) error
 	Get(key string) (*task.Task, error)
 	Subscribe() (<-chan *redis.Message, error)
-	Publish(task *task.Task) error
+	Publish(taskUUID string) error
 }
 
 func NewRedisCache() Cache {
@@ -60,12 +60,8 @@ func (r *redisCache) Subscribe() (<-chan *redis.Message, error) {
 	return pubsub.Channel(), err
 }
 
-func (r *redisCache) Publish(task *task.Task) error {
-	jsonString, err := task.ToJSON()
-	if err != nil {
-		return err
-	}
-	err = r.redisClient.Publish(r.queueChannel, jsonString).Err()
+func (r *redisCache) Publish(taskUUID string) error {
+	err := r.redisClient.Publish(r.queueChannel, taskUUID).Err()
 	if err != nil {
 		return err
 	}

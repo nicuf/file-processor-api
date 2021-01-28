@@ -32,8 +32,7 @@ func testCache() {
 
 	go func(c cache.Cache) {
 		for i := 1; i <= 10; i++ {
-			t := task.Task{ID: string(i)}
-			c.Publish(&t)
+			c.Publish(fmt.Sprintf("%v", i))
 		}
 	}(c)
 
