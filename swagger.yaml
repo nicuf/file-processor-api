@@ -49,7 +49,7 @@ paths:
       operationId: addTask
       responses:
         "200":
-          $ref: '#/responses/taskStatusResponse'
+          $ref: '#/responses/taskInfoResponse'
       tags:
       - addtask
   /files/{uuid}:
@@ -83,10 +83,6 @@ responses:
     description: ""
     schema:
       $ref: '#/definitions/Task'
-  taskStatusResponse:
-    description: ""
-    schema:
-      $ref: '#/definitions/TaskStatus'
 schemes:
 - http
 swagger: "2.0"

@@ -20,7 +20,7 @@ func NewTaskHandler(l *log.Logger) *TaskHandler {
 // swagger:route POST /addtask/{uuid} addtask addTask
 // Add a task to be processed
 // responses:
-//	200: taskStatusResponse
+//	200: taskInfoResponse
 func (taskHandler *TaskHandler) AddTask(rw http.ResponseWriter, req *http.Request) {
 	taskHandler.log.Println("Handle POST Task.")
 	rw.Header().Add("Content-Type", "application/json")

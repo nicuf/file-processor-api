@@ -16,13 +16,6 @@ package handler
 
 import "github.com/nicuf/file-processor-api/task"
 
-// swagger:response taskStatusResponse
-type taskStatusResponseWrapper struct {
-	// Status of the task
-	// in: body
-	Body task.TaskStatus
-}
-
 // swagger:response taskInfoResponse
 type taskInfoResponseWrapper struct {
 	// Task info
