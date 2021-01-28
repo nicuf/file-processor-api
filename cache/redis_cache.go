@@ -1,6 +1,8 @@
 package cache
 
 import (
+	"fmt"
+
 	"github.com/go-redis/redis"
 	"github.com/nicuf/file-processor-api/task"
 )
@@ -16,6 +18,7 @@ type redisCache struct {
 type Cache interface {
 	Set(key string, value task.Task) error
 	Get(key string) (*task.Task, error)
+	GetNextID() (string, error)
 	Subscribe() (<-chan *redis.Message, error)
 	Publish(taskUUID string) error
 }
@@ -27,6 +30,7 @@ func NewRedisCache() Cache {
 		Password: cache.password,
 		DB:       cache.db,
 	})
+
 	return &cache
 }
 
@@ -49,6 +53,14 @@ func (r *redisCache) Get(key string) (*task.Task, error) {
 		return nil, err
 	}
 	return val, err
+}
+
+func (r *redisCache) GetNextID() (string, error) {
+	nextID, err := r.redisClient.Incr("nextID").Result()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%v", nextID), nil
 }
 
 func (r *redisCache) Subscribe() (<-chan *redis.Message, error) {

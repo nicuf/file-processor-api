@@ -44,7 +44,7 @@ func testCache() {
 func main() {
 
 	l := log.New(os.Stdout, "file-processor-api", log.LstdFlags)
-	h := handler.NewTaskHandler(l)
+	h := handler.NewTaskHandler(l, cache.NewRedisCache())
 
 	sm := mux.NewRouter()
 
