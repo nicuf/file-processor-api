@@ -74,13 +74,13 @@ produces:
 - application/json
 responses:
   searchFilesResponse:
-    description: ""
+    description: Array of files that contains a specific UUID
     schema:
       items:
         type: string
       type: array
   taskInfoResponse:
-    description: ""
+    description: Task info
     schema:
       $ref: '#/definitions/Task'
 schemes:

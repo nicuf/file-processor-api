@@ -16,6 +16,7 @@ package handler
 
 import "github.com/nicuf/file-processor-api/task"
 
+// Task info
 // swagger:response taskInfoResponse
 type taskInfoResponseWrapper struct {
 	// Task info
@@ -23,6 +24,7 @@ type taskInfoResponseWrapper struct {
 	Body task.Task
 }
 
+// Array of files that contains a specific UUID
 // swagger:response searchFilesResponse
 type searchFilesResponseWrapper struct {
 	// The list of file that contains specific UUID
