@@ -1,0 +1,98 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  Task:
+    description: Task defines the structure for an API Task
+    properties:
+      creation_time:
+        description: The creation time of the task
+        maxLength: 100
+        type: string
+        x-go-name: CreationTime
+      file_uuid:
+        description: The UUID of the file that is requested to be processed
+        maxLength: 100
+        type: string
+        x-go-name: FileUUID
+      id:
+        description: The id of the task
+        minimum: 1
+        type: string
+        x-go-name: ID
+      result:
+        description: The results contains the UUIDs that are in the file that was
+          processed
+        items:
+          type: string
+        type: array
+        x-go-name: Result
+      status:
+        $ref: '#/definitions/TaskStatus'
+    required:
+    - file_uuid
+    type: object
+    x-go-package: github.com/nicuf/file-processor-api/task
+  TaskStatus:
+    description: TaskStatus is the status of a Task
+    format: int64
+    type: integer
+    x-go-package: github.com/nicuf/file-processor-api/task
+info:
+  description: Documentation for File Processor API
+  title: Classification of File Processor API
+  version: 1.0.0
+paths:
+  /addtask/{uuid}:
+    post:
+      description: Add a task to be processed
+      operationId: addTask
+      responses:
+        "200":
+          $ref: '#/responses/taskStatusResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - addtask
+  /files/{uuid}:
+    get:
+      description: Returns a list of files with UUID
+      operationId: searchFiles
+      responses:
+        "200":
+          $ref: '#/responses/searchFilesResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - files
+  /task/{id}:
+    get:
+      description: Returns task info
+      operationId: getTaskInfo
+      responses:
+        "200":
+          $ref: '#/responses/taskInfoResponse'
+        default:
+          $ref: '#/responses/genericError'
+      tags:
+      - task
+produces:
+- application/json
+responses:
+  searchFilesResponse:
+    description: ""
+    schema:
+      items:
+        type: string
+      type: array
+  taskInfoResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/Task'
+  taskStatusResponse:
+    description: ""
+    schema:
+      $ref: '#/definitions/TaskStatus'
+schemes:
+- http
+swagger: "2.0"
