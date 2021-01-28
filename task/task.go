@@ -4,13 +4,13 @@ import "encoding/json"
 
 //TaskStatus is the status of a Task
 //swagger:model
-type TaskStatus int
+type TaskStatus string
 
 const (
-	Started TaskStatus = iota
-	Finished
-	Queued
-	Failed
+	Queued   TaskStatus = "Queued"
+	Started  TaskStatus = "Started"
+	Finished TaskStatus = "Finished"
+	Failed   TaskStatus = "Failed"
 )
 
 // Task defines the structure for an API Task
@@ -33,7 +33,7 @@ type Task struct {
 
 	// The status of the task
 	// required: false
-	// min: 0
+	// max length: 10
 	Status TaskStatus `json:"status"`
 
 	// The results contains the UUIDs that are in the file that was processed
