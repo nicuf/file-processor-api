@@ -61,7 +61,7 @@ paths:
           $ref: '#/responses/searchFilesResponse'
       tags:
       - files
-  /task/{id}:
+  /task/{uuid}:
     get:
       description: Returns task info
       operationId: getTaskInfo
