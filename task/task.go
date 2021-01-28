@@ -1,5 +1,7 @@
 package task
 
+import "encoding/json"
+
 //TaskStatus is the status of a Task
 //swagger:model
 type TaskStatus int
@@ -37,4 +39,21 @@ type Task struct {
 	// The results contains the UUIDs that are in the file that was processed
 	//required: false
 	Result []string `json:"result"`
+}
+
+func (t *Task) ToJSON() (string, error) {
+	jsonString, err := json.Marshal(t)
+	if err != nil {
+		return "", err
+	}
+	return string(jsonString), err
+}
+
+func FromJson(jsonString string) (*Task, error) {
+	val := Task{}
+	err := json.Unmarshal([]byte(jsonString), &val)
+	if err != nil {
+		return nil, err
+	}
+	return &val, err
 }
