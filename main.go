@@ -52,7 +52,7 @@ func main() {
 	postR.HandleFunc("/addtask/{uuid}", h.AddTask)
 
 	getR := sm.Methods(http.MethodGet).Subrouter()
-	getR.HandleFunc("/task/{id}", h.GetTaskInfo)
+	getR.HandleFunc("/task/{uuid}", h.GetTaskInfo)
 	getR.HandleFunc("/files/{uuid}", h.SearchFiles)
 
 	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
