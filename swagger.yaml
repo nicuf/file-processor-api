@@ -50,8 +50,6 @@ paths:
       responses:
         "200":
           $ref: '#/responses/taskStatusResponse'
-        default:
-          $ref: '#/responses/genericError'
       tags:
       - addtask
   /files/{uuid}:
@@ -61,8 +59,6 @@ paths:
       responses:
         "200":
           $ref: '#/responses/searchFilesResponse'
-        default:
-          $ref: '#/responses/genericError'
       tags:
       - files
   /task/{id}:
@@ -72,8 +68,6 @@ paths:
       responses:
         "200":
           $ref: '#/responses/taskInfoResponse'
-        default:
-          $ref: '#/responses/genericError'
       tags:
       - task
 produces:
