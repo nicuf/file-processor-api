@@ -50,33 +50,34 @@ paths:
         "200":
           $ref: '#/responses/searchFilesResponse'
       tags:
-      - files
+      - file-processor
+      - ""
   /isloop/{uuid}:
     get:
       description: Returns true or false
-      operationId: searchFiles
+      operationId: isLoop
       responses:
         "200":
           $ref: '#/responses/isLoopResponse'
       tags:
-      - files
+      - file-processor
   /task/{uuid}:
     get:
       description: Returns task info
-      operationId: getTaskInfo
+      operationId: task
       responses:
         "200":
           $ref: '#/responses/taskInfoResponse'
       tags:
-      - task
+      - file-processor
     post:
       description: Add a task to be processed
-      operationId: addTask
+      operationId: task
       responses:
         "200":
           $ref: '#/responses/taskInfoResponse'
       tags:
-      - addtask
+      - file-processor
 produces:
 - application/json
 responses:
