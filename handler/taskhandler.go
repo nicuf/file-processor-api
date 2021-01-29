@@ -39,7 +39,7 @@ func (taskHandler *TaskHandler) addNewTask(uuid string) (*task.Task, error) {
 		return nil, err
 	}
 
-	err = taskHandler.cache.Publish(uuid)
+	err = taskHandler.cache.PublishTaskMessage(uuid)
 	if err != nil {
 		return nil, err
 	}
