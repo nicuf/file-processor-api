@@ -37,6 +37,7 @@ func main() {
 	getR := sm.Methods(http.MethodGet).Subrouter()
 	getR.HandleFunc("/task/{uuid}", h.GetTaskInfo)
 	getR.HandleFunc("/files/{uuid}", h.SearchFiles)
+	getR.HandleFunc("/isloop/{uuid}", h.IsLoop)
 
 	opts := middleware.RedocOpts{SpecURL: "/swagger.yaml"}
 	sh := middleware.Redoc(opts, nil)

@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nicuf/file-processor-api/cache"
 	"github.com/nicuf/file-processor-api/task"
+	"github.com/nicuf/file-processor-api/worker"
 )
 
 type TaskHandler struct {
@@ -114,5 +115,19 @@ func (taskHandler *TaskHandler) SearchFiles(rw http.ResponseWriter, req *http.Re
 // responses:
 //  200: isLoopResponse
 func (taskHandler *TaskHandler) IsLoop(rw http.ResponseWriter, req *http.Request) {
+	taskHandler.log.Println("Handle Get IsLoop.")
+	rw.Header().Add("Content-Type", "application/json")
 
+	vars := mux.Vars(req)
+	uuid := vars["uuid"]
+
+	val, err := worker.IsLoop(uuid)
+	if err != nil {
+		http.Error(rw, "Unable to process request.", http.StatusInternalServerError)
+	}
+	encoder := json.NewEncoder(rw)
+	err = encoder.Encode(val)
+	if err != nil {
+		http.Error(rw, "Unable to process request.", http.StatusInternalServerError)
+	}
 }

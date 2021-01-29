@@ -26,18 +26,12 @@ func NewProcessor(l *log.Logger, c cache.Cache) Processor {
 func (p *processor) RunTask(fileUUID string) error {
 
 	p.updateCache(fileUUID, task.Started, []string{})
-
-	path := filepath.Join("input", fileUUID)
-	data, err := ioutil.ReadFile(path)
+	uuids, err := readUUIDSFromFile(fileUUID)
 	if err != nil {
 		p.log.Println("File reading error", err)
 		p.updateCache(fileUUID, task.Failed, []string{})
 		return err
 	}
-
-	re := regexp.MustCompile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
-
-	uuids := re.FindAllString(string(data), -1)
 	p.log.Println("Found ids: ", uuids)
 	return p.updateCache(fileUUID, task.Finished, uuids)
 }
@@ -60,4 +54,39 @@ func (p *processor) updateCache(fileUUID string, status task.TaskStatus, result 
 		return err
 	}
 	return nil
+}
+
+func IsLoop(fileUUID string) (bool, error) {
+	readFiles := make(map[string]bool)
+	filesToRead := []string{fileUUID}
+
+	for {
+		currentFile := filesToRead[0]
+		filesToRead = filesToRead[1:]
+		if _, ok := readFiles[currentFile]; ok {
+			return true, nil
+		}
+		readFiles[currentFile] = true
+		uuids, err := readUUIDSFromFile(currentFile)
+		if err != nil {
+			return false, err
+		}
+		filesToRead = append(filesToRead, uuids...)
+	}
+
+	return false, nil
+}
+
+func readUUIDSFromFile(fileUUID string) ([]string, error) {
+
+	path := filepath.Join("input", fileUUID)
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return []string{}, err
+	}
+
+	re := regexp.MustCompile("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
+	uuids := re.FindAllString(string(data), -1)
+
+	return uuids, nil
 }
