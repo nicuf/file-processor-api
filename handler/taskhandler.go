@@ -48,7 +48,7 @@ func (taskHandler *TaskHandler) addNewTask(uuid string) (*task.Task, error) {
 }
 
 //Send a file to analysis that is specified via the ID
-// swagger:route POST /addtask/{uuid} addtask addTask
+// swagger:route POST /task/{uuid} addtask addTask
 // Add a task to be processed
 // responses:
 //	200: taskInfoResponse

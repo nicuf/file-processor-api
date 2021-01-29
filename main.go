@@ -32,7 +32,7 @@ func main() {
 	sm := mux.NewRouter()
 
 	postR := sm.Methods(http.MethodPost).Subrouter()
-	postR.HandleFunc("/addtask/{uuid}", h.AddTask)
+	postR.HandleFunc("/task/{uuid}", h.AddTask)
 
 	getR := sm.Methods(http.MethodGet).Subrouter()
 	getR.HandleFunc("/task/{uuid}", h.GetTaskInfo)
