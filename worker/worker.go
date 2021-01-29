@@ -2,7 +2,6 @@ package worker
 
 import (
 	"log"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/nicuf/file-processor-api/cache"
@@ -12,6 +11,7 @@ type workerPool struct {
 	workersNumber    int
 	messageQueue     cache.Cache
 	log              *log.Logger
+	work             func(fileUUID string) error
 	availableWorkers chan string
 }
 
@@ -20,11 +20,12 @@ type WorkerPool interface {
 	StartMaster()
 }
 
-func NewWorkerPool(numberOfWorkers int, messageQueue cache.Cache, log *log.Logger) WorkerPool {
+func NewWorkerPool(numberOfWorkers int, messageQueue cache.Cache, log *log.Logger, work func(fileUUID string) error) WorkerPool {
 	return &workerPool{
 		workersNumber: numberOfWorkers,
 		messageQueue:  messageQueue,
 		log:           log,
+		work:          work,
 	}
 }
 
@@ -48,7 +49,12 @@ func (wp *workerPool) StartWorkers() {
 				wp.log.Println("Waiting for work, worker: ", uuid)
 				message := <-ch
 				wp.log.Printf("Worker: %v received task: %v", uuid, message.Payload)
-				wp.performTask(message.Payload)
+				err = wp.performTask(message.Payload)
+				if err != nil {
+					wp.log.Printf("Worker: %v failed task: %v", uuid, message.Payload)
+				} else {
+					wp.log.Printf("Worker: %v finished task: %v", uuid, message.Payload)
+				}
 				err = wp.messageQueue.PublishAvailableWorker(uuid)
 				if err != nil {
 					wp.log.Fatal("Unable to publish available worker, ", err)
@@ -59,12 +65,15 @@ func (wp *workerPool) StartWorkers() {
 }
 
 func (wp *workerPool) StartMaster() {
+	wp.log.Println("Starting Master")
+	initChan := make(chan int, 2)
 	wp.availableWorkers = make(chan string, wp.workersNumber)
 	go func() {
 		availableWorkersChan, err := wp.messageQueue.SubscribeToAvailableWorkers()
 		if err != nil {
 			log.Fatal("Unable to subscribe to available workers, ", err)
 		}
+		initChan <- 1
 		for {
 			availableWorker := <-availableWorkersChan
 			wp.log.Println("Received available worker: ", availableWorker.Payload)
@@ -73,12 +82,11 @@ func (wp *workerPool) StartMaster() {
 	}()
 
 	go func() {
-		wp.log.Println("Starting Master")
 		messageChan, err := wp.messageQueue.SubscribeToApiMessages()
 		if err != nil {
 			log.Fatal("Unable to subscribe to api message queue, ", err)
 		}
-
+		initChan <- 2
 		for {
 			fileUUID := <-messageChan
 			wp.log.Println("Received api message: ", fileUUID.Payload)
@@ -94,11 +102,15 @@ func (wp *workerPool) StartMaster() {
 
 		}
 	}()
+
+	<-initChan
+	<-initChan
 }
 
 func (wp *workerPool) performTask(uuid string) error {
-	wp.log.Println("Processing: ", uuid)
-	time.Sleep(50 * time.Second)
-	wp.log.Println("Finished: ", uuid)
+	err := wp.work(uuid)
+	if err != nil {
+		return err
+	}
 	return nil
 }

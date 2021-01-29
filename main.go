@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,40 +12,18 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nicuf/file-processor-api/cache"
 	"github.com/nicuf/file-processor-api/handler"
-	"github.com/nicuf/file-processor-api/task"
+	"github.com/nicuf/file-processor-api/worker"
 )
 
-func testCache() {
-
-	c := cache.NewRedisCache()
-	c.Set("key", task.Task{})
-
-	v, _ := c.Get("key")
-
-	fmt.Printf("%#v", v)
-
-	ch, err := c.Subscribe()
-	if err != nil {
-		fmt.Errorf("cannot subscribe")
-	}
-
-	go func(c cache.Cache) {
-		for i := 1; i <= 10; i++ {
-			c.Publish(fmt.Sprintf("%v", i))
-		}
-	}(c)
-
-	for msg := range ch {
-		fmt.Println(msg.Channel, msg.Payload)
-	}
-}
-
 func main() {
-
+	//testCache()
+	//testGetNextID()
 	l := log.New(os.Stdout, "file-processor-api", log.LstdFlags)
 	redisCache := cache.NewRedisCache()
 
-	workerPool := worker.NewWorkerPool(2, redisCache, l)
+	taskProcessor := worker.NewProcessor(l, redisCache)
+
+	workerPool := worker.NewWorkerPool(2, redisCache, l, taskProcessor.RunTask)
 	workerPool.StartMaster()
 	workerPool.StartWorkers()
 
