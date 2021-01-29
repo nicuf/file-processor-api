@@ -107,3 +107,12 @@ func (taskHandler *TaskHandler) GetTaskInfo(rw http.ResponseWriter, req *http.Re
 func (taskHandler *TaskHandler) SearchFiles(rw http.ResponseWriter, req *http.Request) {
 
 }
+
+// Given a file UUID, check if there’s a chain of referenced files that starts with that file and contains a loop
+// swagger:route GET /isloop/{uuid} files searchFiles
+// Returns true or false
+// responses:
+//  200: isLoopResponse
+func (taskHandler *TaskHandler) IsLoop(rw http.ResponseWriter, req *http.Request) {
+
+}

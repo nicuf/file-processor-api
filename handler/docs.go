@@ -21,7 +21,7 @@ import "github.com/nicuf/file-processor-api/task"
 type taskInfoResponseWrapper struct {
 	// Task info
 	// in: body
-	Body task.Task
+	Body task.Task `json:"task"`
 }
 
 // Array of files that contains a specific UUID
@@ -30,4 +30,11 @@ type searchFilesResponseWrapper struct {
 	// The list of file that contains specific UUID
 	// in: body
 	Body []string `json:"files"`
+}
+
+// True or False
+// swagger:response isLoopResponse
+type isLoopResponseWrapper struct {
+	// in: body
+	Body bool `json:"result"`
 }
