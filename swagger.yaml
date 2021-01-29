@@ -51,7 +51,7 @@ paths:
           $ref: '#/responses/searchFilesResponse'
       tags:
       - files
-  /loop/{uuid}:
+  /isloop/{uuid}:
     get:
       description: Returns true or false
       operationId: searchFiles
