@@ -3,6 +3,7 @@ package worker
 import (
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 
@@ -60,18 +61,20 @@ func IsLoop(fileUUID string) (bool, error) {
 	readFiles := make(map[string]bool)
 	filesToRead := []string{fileUUID}
 
-	for {
+	for len(filesToRead) > 0 {
 		currentFile := filesToRead[0]
 		filesToRead = filesToRead[1:]
 		if _, ok := readFiles[currentFile]; ok {
 			return true, nil
 		}
 		readFiles[currentFile] = true
-		uuids, err := readUUIDSFromFile(currentFile)
-		if err != nil {
-			return false, err
+		if _, err := os.Stat(filepath.Join("input", currentFile)); err == nil {
+			uuids, err := readUUIDSFromFile(currentFile)
+			if err != nil {
+				return false, err
+			}
+			filesToRead = append(filesToRead, uuids...)
 		}
-		filesToRead = append(filesToRead, uuids...)
 	}
 
 	return false, nil
