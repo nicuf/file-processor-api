@@ -9,9 +9,11 @@ import (
 	"time"
 
 	"github.com/go-openapi/runtime/middleware"
+	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 	"github.com/nicuf/file-processor-api/cache"
 	"github.com/nicuf/file-processor-api/handler"
+	"github.com/nicuf/file-processor-api/message_queue"
 	"github.com/nicuf/file-processor-api/worker"
 )
 
@@ -19,15 +21,21 @@ func main() {
 	//testCache()
 	//testGetNextID()
 	l := log.New(os.Stdout, "file-processor-api", log.LstdFlags)
-	redisCache := cache.NewRedisCache()
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	redisCache := cache.NewRedisCache(redisClient)
+	redisMessageQueue := message_queue.NewRedisMessageQueue(redisClient)
 
 	taskProcessor := worker.NewProcessor(l, redisCache)
 
-	workerPool := worker.NewWorkerPool(2, redisCache, l, taskProcessor.RunTask)
+	workerPool := worker.NewWorkerPool(2, redisMessageQueue, l, taskProcessor.RunTask)
 	workerPool.StartMaster()
 	workerPool.StartWorkers()
 
-	h := handler.NewTaskHandler(l, redisCache)
+	h := handler.NewTaskHandler(l, redisCache, redisMessageQueue)
 
 	sm := mux.NewRouter()
 

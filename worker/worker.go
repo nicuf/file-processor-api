@@ -4,12 +4,12 @@ import (
 	"log"
 
 	"github.com/google/uuid"
-	"github.com/nicuf/file-processor-api/cache"
+	"github.com/nicuf/file-processor-api/message_queue"
 )
 
 type workerPool struct {
 	workersNumber    int
-	messageQueue     cache.Cache
+	messageQueue     message_queue.MessageQueue
 	log              *log.Logger
 	work             func(fileUUID string) error
 	availableWorkers chan string
@@ -20,7 +20,7 @@ type WorkerPool interface {
 	StartMaster()
 }
 
-func NewWorkerPool(numberOfWorkers int, messageQueue cache.Cache, log *log.Logger, work func(fileUUID string) error) WorkerPool {
+func NewWorkerPool(numberOfWorkers int, messageQueue message_queue.MessageQueue, log *log.Logger, work func(fileUUID string) error) WorkerPool {
 	return &workerPool{
 		workersNumber: numberOfWorkers,
 		messageQueue:  messageQueue,

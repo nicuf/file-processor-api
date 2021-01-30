@@ -9,17 +9,19 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/gorilla/mux"
 	"github.com/nicuf/file-processor-api/cache"
+	"github.com/nicuf/file-processor-api/message_queue"
 	"github.com/nicuf/file-processor-api/task"
 	"github.com/nicuf/file-processor-api/worker"
 )
 
 type TaskHandler struct {
-	log   *log.Logger
-	cache cache.Cache
+	log          *log.Logger
+	cache        cache.Cache
+	messageQueue message_queue.MessageQueue
 }
 
-func NewTaskHandler(l *log.Logger, c cache.Cache) *TaskHandler {
-	return &TaskHandler{l, c}
+func NewTaskHandler(l *log.Logger, c cache.Cache, m message_queue.MessageQueue) *TaskHandler {
+	return &TaskHandler{l, c, m}
 }
 
 func (taskHandler *TaskHandler) addNewTask(uuid string) (*task.Task, error) {
@@ -40,7 +42,7 @@ func (taskHandler *TaskHandler) addNewTask(uuid string) (*task.Task, error) {
 		return nil, err
 	}
 
-	err = taskHandler.cache.PublishTaskMessage(uuid)
+	err = taskHandler.messageQueue.PublishTaskMessage(uuid)
 	if err != nil {
 		return nil, err
 	}
